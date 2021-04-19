@@ -1,0 +1,7 @@
+version: '3.7'
+services:
+  php:
+    environment:
+      - AM_I_INSIDE_DOCKER=true
+    image: "vonq/php:8.0-0.1.0"
+    working_dir: /app

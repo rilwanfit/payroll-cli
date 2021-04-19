@@ -1,0 +1,8 @@
+version: '3.7'
+services:
+  php:
+    environment:
+      - COMPOSER_AUTH
+      - COMPOSER_MEMORY_LIMIT=-1
+    volumes:
+      - ./:/app
