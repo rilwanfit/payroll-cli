@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\PayrollStorage;
 
+use App\Exception\CouldNotInsertPayroll;
 use League\Csv\CannotInsertRecord;
 use League\Csv\Writer;
 use Psr\Log\LoggerInterface;
@@ -35,6 +36,8 @@ class CsvDocumentStorage implements DocumentStorage
             $this->logger->error($exception->getMessage(), [
                 'record' => $record,
             ]);
+
+            throw new CouldNotInsertPayroll();
         }
     }
 }

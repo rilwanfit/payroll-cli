@@ -1,0 +1,34 @@
+#!/usr/bin/env php
+<?php
+require dirname(__DIR__).'/vendor/autoload.php';
+
+use App\Command\GeneratePayrollCommand;
+use App\Payroll\DateUtilities;
+use App\Payroll\Generator;
+use App\PayrollStorage\CsvDocumentStorage;
+use Carbon\Carbon;
+use Monolog\Handler\StreamHandler;
+use Monolog\Logger;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\SingleCommandApplication;
+
+$outputFolder = dirname(__DIR__) . '/output';
+
+$logger = new Logger('name');
+$logger->pushHandler(new StreamHandler(dirname(__DIR__) . '/var/log/dev.log', Logger::WARNING));
+
+$csvFileStorage = new CsvDocumentStorage($outputFolder, $logger);
+
+$payrollGenerator = new Generator(new DateUtilities());
+
+(new SingleCommandApplication())
+    ->setName('Payroll Generator')
+    ->setVersion('1.0.0')
+    ->addArgument('filename', InputArgument::OPTIONAL, 'The output filename', 'payroll_' . Carbon::now()->year)
+    ->setCode(function (InputInterface $input, OutputInterface $output) use ($csvFileStorage, $payrollGenerator) {
+        // output arguments and options
+        (new GeneratePayrollCommand($input, $output, $csvFileStorage, $payrollGenerator))->execute();
+    })
+    ->run();
